@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "59510203041",
+    "firebase_url": "https://auf-connect-app-default-rtdb.firebaseio.com",
+    "project_id": "auf-connect-app",
+    "storage_bucket": "auf-connect-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59510203041:android:45824a610aacba1cde86e0",
+        "android_client_info": {
+          "package_name": "com.example.auf_connect_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7OVMLE_a16pVz6jvbLTSCxKVhcZvjHXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
