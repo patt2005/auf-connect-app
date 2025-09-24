@@ -108,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<PreviewResource> _resources = [];
   List<ServiceModel> _services = [];
   ResourceType _selectedResourceType = ResourceType.formation;
+  bool _showClosedServices = false;
   int _currentProjectPage = 1;
   int _currentMemberPage = 1;
   int _currentPartnerPage = 1;
@@ -2107,7 +2108,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Text(
-                  'OIF',
+                  'AUF Connect',
                   style: TextStyle(
                     fontFamily: 'Varela Round',
                     fontSize: 20,
@@ -2164,7 +2165,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildSectionButton(
                 context: context,
                 icon: Icons.description_outlined,
-                title: 'Proiecte',
+                title: 'Proiecte AUF/OIF',
                 isSelected: _selectedSection == SectionType.projects,
                 onTap: () => _onSectionTap(SectionType.projects),
               ),
@@ -2174,7 +2175,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildSectionButton(
                 context: context,
                 icon: Icons.people_outline,
-                title: 'Membri',
+                title: 'Membri AUF/OIF',
                 isSelected: _selectedSection == SectionType.members,
                 onTap: () => _onSectionTap(SectionType.members),
               ),
@@ -2184,7 +2185,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildSectionButton(
                 context: context,
                 icon: Icons.groups_outlined,
-                title: 'Parteneri',
+                title: 'Parteneri AUF/OIF',
                 isSelected: _selectedSection == SectionType.partners,
                 onTap: () => _onSectionTap(SectionType.partners),
               ),
@@ -2211,7 +2212,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildSectionButton(
                 context: context,
                 icon: Icons.business_center_outlined,
-                title: 'Servicii',
+                title: 'Apeluri AUF/OIF',
                 isSelected: _selectedSection == SectionType.services,
                 onTap: () => _onSectionTap(SectionType.services),
               ),
@@ -2242,6 +2243,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        height: 110,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color:
@@ -2255,7 +2257,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
@@ -2263,17 +2265,19 @@ class _HomeScreenState extends State<HomeScreen> {
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
             const SizedBox(height: 12),
-            Text(
-              title,
-              style: TextStyle(
-                fontFamily: 'Varela Round',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            Flexible(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontFamily: 'Varela Round',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                softWrap: true,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -2774,6 +2778,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildServicesContent() {
+    // Filter services based on the selected filter
+    final filteredServices = _services.where((service) {
+      return _showClosedServices ? service.isClosed : !service.isClosed;
+    }).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2799,22 +2808,116 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 16),
 
+        // Filter buttons
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _showClosedServices = false;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: !_showClosedServices ? AppColors.primary : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: !_showClosedServices ? AppColors.primary : Colors.grey[300]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Apeluri curente',
+                      style: TextStyle(
+                        fontFamily: 'Varela Round',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: !_showClosedServices ? Colors.white : AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _showClosedServices = true;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: _showClosedServices ? AppColors.primary : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _showClosedServices ? AppColors.primary : Colors.grey[300]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Apeluri încheiate',
+                      style: TextStyle(
+                        fontFamily: 'Varela Round',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: _showClosedServices ? Colors.white : AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
         // Show services list if available
-        if (_services.isNotEmpty)
+        if (filteredServices.isNotEmpty)
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _services.length,
+            itemCount: filteredServices.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: _buildServiceCard(_services[index]),
+                child: _buildServiceCard(filteredServices[index]),
               );
             },
           )
         // Show empty state if no services and not loading
         else if (!_servicesService.isLoading)
-          _buildEmptyServicesState()
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.inbox_outlined,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _showClosedServices
+                      ? 'Nu există apeluri încheiate'
+                      : 'Nu există apeluri curente',
+                    style: TextStyle(
+                      fontFamily: 'Varela Round',
+                      fontSize: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
         // Show loading placeholder if loading
         else
           _buildLoadingPlaceholder(),
@@ -2871,12 +2974,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: service.isClosed ? Colors.red : Colors.green,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
-                    'Apel închis',
-                    style: TextStyle(
+                  child: Text(
+                    service.isClosed ? 'Apel închis' : 'Apel curent',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontFamily: 'Varela Round',
                       fontSize: 10,
@@ -2942,46 +3045,6 @@ class _HomeScreenState extends State<HomeScreen> {
         Icons.business_center_outlined,
         size: 64,
         color: AppColors.primary.withValues(alpha: 0.6),
-      ),
-    );
-  }
-
-  Widget _buildEmptyServicesState() {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.business_center_outlined,
-            size: 48,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Nu sunt servicii disponibile momentan',
-            style: TextStyle(
-              fontFamily: 'Varela Round',
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Verificați din nou mai târziu',
-            style: TextStyle(
-              fontFamily: 'Varela Round',
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -3,12 +3,14 @@ class ServiceModel {
   final String imageUrl;
   final String title;
   final String dateString;
+  final bool isClosed;
 
   ServiceModel({
     required this.id,
     required this.imageUrl,
     required this.title,
     required this.dateString,
+    this.isClosed = false,
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class ServiceModel {
       imageUrl: json['imageUrl'] ?? '',
       title: json['title'] ?? '',
       dateString: json['dateString'] ?? '',
+      isClosed: json['isClosed'] ?? false,
     );
   }
 
@@ -26,6 +29,7 @@ class ServiceModel {
       'imageUrl': imageUrl,
       'title': title,
       'dateString': dateString,
+      'isClosed': isClosed,
     };
   }
 
@@ -34,12 +38,14 @@ class ServiceModel {
     String? imageUrl,
     String? title,
     String? dateString,
+    bool? isClosed,
   }) {
     return ServiceModel(
       id: id ?? this.id,
       imageUrl: imageUrl ?? this.imageUrl,
       title: title ?? this.title,
       dateString: dateString ?? this.dateString,
+      isClosed: isClosed ?? this.isClosed,
     );
   }
 }
